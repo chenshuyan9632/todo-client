@@ -13,3 +13,7 @@ export const add = option => {
 export const fetch = query => {
   return http.post('/todo/fetch',{query});
 };
+
+export const update = option => {
+  return http.post('/todo/update', { content: option});
+};

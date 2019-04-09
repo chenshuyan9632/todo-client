@@ -16,6 +16,7 @@
 </template>
 <script>
 import * as http from "@/request/todo"
+import throttle from 'lodash/throttle';
 
 export default {
   data() {
@@ -34,22 +35,31 @@ export default {
       return this.$route.query.userId
     }
   },
+  watch: {
+    check: {
+      handler: throttle(function () {
+        this.update();
+      }, 1000, { 'leading': false })
+    }
+  },
   methods: {
     fetch() {
       http.fetch(this.userId).then(res => {
         const data = res.data;
-        // this.$message(data.message)
         if (!data.failed) {
           this.todo = data.content.map(item => {
             const { content, completed } = item;
             return { content, completed }
           });
-          this.check = data.content.filter(item => {
+          const checkData = data.content.map(item => {
             const { content, completed } = item;
             if (completed) {
               return content
             }
           });
+          this.check = checkData.filter(el => {
+            return el && el.trim();
+          })
         }
       })
     },
@@ -67,6 +77,11 @@ export default {
         }
       })
     },
+    update() {
+      http.update(this.check).then(res=>{
+        console.log(res.data);
+      })
+    }
   }
 }
 </script>
