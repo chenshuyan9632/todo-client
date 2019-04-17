@@ -78,7 +78,10 @@ export default {
       })
     },
     update() {
-      http.update(this.check).then(res=>{
+      const val = this.todo.map(item => {
+        return Object.assign(item, { completed: this.check.includes(item.content) })
+      })
+      http.update(val).then(res => {
         console.log(res.data);
       })
     }
